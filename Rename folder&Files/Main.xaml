@@ -1,4 +1,4 @@
-<Activity mc:Ignorable="sap sap2010" x:Class="Main" VisualBasic.Settings="{x:Null}" sap:VirtualizedContainerService.HintSize="470,371" sap2010:WorkflowViewState.IdRef="ActivityBuilder_1" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation" xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib" xmlns:si="clr-namespace:System.IO;assembly=System.Private.CoreLib" xmlns:uascw="clr-namespace:UiPath.Activities.System.Compression.Workflow;assembly=UiPath.System.Activities" xmlns:ue="clr-namespace:UiPath.Excel;assembly=UiPath.Excel.Activities" xmlns:ueab="clr-namespace:UiPath.Excel.Activities.Business;assembly=UiPath.Excel.Activities" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:upr="clr-namespace:UiPath.Platform.ResourceHandling;assembly=UiPath.Platform" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<Activity mc:Ignorable="sap sap2010" x:Class="Main" VisualBasic.Settings="{x:Null}" sap:VirtualizedContainerService.HintSize="470,371" sap2010:WorkflowViewState.IdRef="ActivityBuilder_1" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation" xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib" xmlns:si="clr-namespace:System.IO;assembly=System.Private.CoreLib" xmlns:uascw="clr-namespace:UiPath.Activities.System.Compression.Workflow;assembly=UiPath.System.Activities" xmlns:ucat="clr-namespace:UiPath.Core.Activities.TextModifications;assembly=UiPath.System.Activities" xmlns:ue="clr-namespace:UiPath.Excel;assembly=UiPath.Excel.Activities" xmlns:ueab="clr-namespace:UiPath.Excel.Activities.Business;assembly=UiPath.Excel.Activities" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:upr="clr-namespace:UiPath.Platform.ResourceHandling;assembly=UiPath.Platform" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <TextExpression.NamespacesForImplementation>
     <scg:List x:TypeArguments="x:String" Capacity="48">
       <x:String>System.Activities</x:String>
@@ -37,6 +37,10 @@
       <x:String>System.Reflection</x:String>
       <x:String>System.Linq.Expressions</x:String>
       <x:String>UiPath.Platform</x:String>
+      <x:String>UiPath.Shared.Activities.Business</x:String>
+      <x:String>UiPath.Core.Activities.TextModifications</x:String>
+      <x:String>UiPath.Activities.System.Workflow.Business</x:String>
+      <x:String>UiPath.Activities.System.Compression.Zip</x:String>
     </scg:List>
   </TextExpression.NamespacesForImplementation>
   <TextExpression.ReferencesForImplementation>
@@ -102,9 +106,15 @@
       <AssemblyReference>UiPath.System.Activities.Design</AssemblyReference>
       <AssemblyReference>System.Linq.Expressions</AssemblyReference>
       <AssemblyReference>UiPath.CodedWorkflows</AssemblyReference>
+      <AssemblyReference>UiPath.Workflow</AssemblyReference>
+      <AssemblyReference>System.IO.FileSystem.Watcher</AssemblyReference>
+      <AssemblyReference>System.IO.Packaging</AssemblyReference>
+      <AssemblyReference>System.IO.FileSystem.AccessControl</AssemblyReference>
+      <AssemblyReference>System.IO.FileSystem.DriveInfo</AssemblyReference>
+      <AssemblyReference>UiPath.UIAutomationNext.Activities</AssemblyReference>
     </scg:List>
   </TextExpression.ReferencesForImplementation>
-  <ueab:SequenceX DisplayName="Single Excel Process Scope" sap:VirtualizedContainerService.HintSize="708,662.04" sap2010:WorkflowViewState.IdRef="Sequence_1">
+  <ueab:SequenceX DisplayName="Single Excel Process Scope" sap:VirtualizedContainerService.HintSize="866.4000000000001,1802.4" sap2010:WorkflowViewState.IdRef="Sequence_1">
     <ueab:SequenceX.Variables>
       <Variable x:TypeArguments="ue:IWorkbookQuickHandle" Default="[new WorkbookQuickHandle(workbookPath:=&quot;Project_Notebook.xlsx&quot;,visible:=True,autoSave:=False,createNew:=True,readOnly:=False,isWorkspace:=True)]" Name="Notes" />
       <Variable x:TypeArguments="upr:ILocalResource" Name="folder">
@@ -116,13 +126,71 @@
         </sap:WorkflowViewStateService.ViewState>
       </Variable>
       <Variable x:TypeArguments="si:DirectoryInfo" Name="ExtractedFolder" />
+      <Variable x:TypeArguments="upr:ILocalResource[]" Name="extractedFiles">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:String x:Key="SourceIdRef">ExtractFiles_1</x:String>
+            <x:String x:Key="SourcePropertyName">Content</x:String>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </Variable>
+      <Variable x:TypeArguments="x:String" Name="FileNameNoExtension" />
     </ueab:SequenceX.Variables>
     <sap:WorkflowViewStateService.ViewState>
       <scg:Dictionary x:TypeArguments="x:String, x:Object">
         <x:Boolean x:Key="IsExpanded">True</x:Boolean>
       </scg:Dictionary>
     </sap:WorkflowViewStateService.ViewState>
-    <ui:CreateDirectory ContinueOnError="{x:Null}" DisplayName="Create Folder" sap:VirtualizedContainerService.HintSize="416,112" sap2010:WorkflowViewState.IdRef="CreateDirectory_1" Output="[folder]" Path="Renamed Files" />
-    <uascw:ExtractFiles Content="{x:Null}" File="{x:Null}" Password="{x:Null}" CodePage="Default" ConflictResolution="Replace" DestinationFolder="[UiPathObjectExtensions.AsText(folder)]" DestinationFolderInfo="[ExtractedFolder]" DisplayName="Extract/Unzip Files" ExtractToADedicatedFolder="True" FileToExtract="[string.Format(&quot;{0}\Learn to Program\UiPath\Rename files&amp;folders\Introduction to File and Folder Automation - Input Documents.zip&quot;, Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments))]" sap:VirtualizedContainerService.HintSize="416,230" sap2010:WorkflowViewState.IdRef="ExtractFiles_1" SkipUnsupportedFiles="False" />
+    <ui:CreateDirectory ContinueOnError="{x:Null}" DisplayName="Create Folder" sap:VirtualizedContainerService.HintSize="449.6,112.8" sap2010:WorkflowViewState.IdRef="CreateDirectory_1" Output="[folder]" Path="[string.Format(&quot;{0}\Learn to Program\UiPath\Rename files&amp;folders\Renamed Files&quot;, Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments))]" />
+    <uascw:ExtractFiles DestinationFolder="{x:Null}" File="{x:Null}" Password="{x:Null}" CodePage="Default" ConflictResolution="Replace" Content="[extractedFiles]" DestinationFolderInfo="[ExtractedFolder]" DisplayName="Extract/Unzip Files" ExtractToADedicatedFolder="True" FileToExtract="[string.Format(&quot;{0}\Learn to Program\UiPath\Rename files&amp;folders\Introduction to File and Folder Automation - Input Documents.zip&quot;, Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments))]" sap:VirtualizedContainerService.HintSize="449.6,240.8" sap2010:WorkflowViewState.IdRef="ExtractFiles_1" SkipUnsupportedFiles="False" />
+    <WriteLine DisplayName="Write Line" sap:VirtualizedContainerService.HintSize="449.6,122.4" sap2010:WorkflowViewState.IdRef="WriteLine_1" Text="[ExtractedFolder.FullName]" />
+    <ui:ForEachFileX DisplayName="For Each File in Folder" Folder="[UiPathObjectExtensions.AsText(ExtractedFolder)]" sap:VirtualizedContainerService.HintSize="449.6,1064" sap2010:WorkflowViewState.IdRef="ForEachFileX_1" IncludeSubDirectories="True" OrderBy="NameAscFirst" SkipFolderWithoutPermission="False">
+      <ui:ForEachFileX.Body>
+        <ActivityAction x:TypeArguments="si:FileInfo, x:Int32">
+          <ActivityAction.Argument1>
+            <DelegateInArgument x:TypeArguments="si:FileInfo" Name="CurrentFile" />
+          </ActivityAction.Argument1>
+          <ActivityAction.Argument2>
+            <DelegateInArgument x:TypeArguments="x:Int32" Name="CurrentIndex" />
+          </ActivityAction.Argument2>
+          <Sequence DisplayName="Do" sap:VirtualizedContainerService.HintSize="416,768.8" sap2010:WorkflowViewState.IdRef="Sequence_2">
+            <sap:WorkflowViewStateService.ViewState>
+              <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+              </scg:Dictionary>
+            </sap:WorkflowViewStateService.ViewState>
+            <ui:CopyFile ContinueOnError="{x:Null}" Destination="[string.Format(&quot;{0}\Learn to Program\UiPath\Rename files&amp;folders\Renamed Files&quot;, Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments))]" DisplayName="Copy File" sap:VirtualizedContainerService.HintSize="401.6,187.2" sap2010:WorkflowViewState.IdRef="CopyFile_1" Overwrite="True" Path="[CurrentFile.FullName]" />
+            <ui:ModifyText DisplayName="Modify Text" sap:VirtualizedContainerService.HintSize="401.6,376.8" sap2010:WorkflowViewState.IdRef="ModifyText_1" OutputText="[FileNameNoExtension]" SourceText="[CurrentFile.Name]">
+              <ui:ModifyText.Body>
+                <ActivityAction>
+                  <Sequence DisplayName="Do" sap2010:WorkflowViewState.IdRef="Sequence_3">
+                    <sap:WorkflowViewStateService.ViewState>
+                      <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                        <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+                      </scg:Dictionary>
+                    </sap:WorkflowViewStateService.ViewState>
+                    <ucat:FindAndReplaceTextModification ReplaceText="{x:Null}" DisplayName="Find and replace text" sap:VirtualizedContainerService.HintSize="333.6,160" sap2010:WorkflowViewState.IdRef="FindAndReplaceTextModification_1" SearchText="[CurrentFile.Extension]">
+                      <sap:WorkflowViewStateService.ViewState>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                          <x:Boolean x:Key="IsPinned">False</x:Boolean>
+                        </scg:Dictionary>
+                      </sap:WorkflowViewStateService.ViewState>
+                    </ucat:FindAndReplaceTextModification>
+                  </Sequence>
+                </ActivityAction>
+              </ui:ModifyText.Body>
+            </ui:ModifyText>
+            <ui:RenameFileX DisplayName="Rename File" FilePath="[string.Format(&quot;{0}\Learn to Program\UiPath\Rename files&amp;folders\Renamed Files\{1}&quot;, Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), CurrentFile.Name)]" sap:VirtualizedContainerService.HintSize="401.6,167.2" sap2010:WorkflowViewState.IdRef="RenameFileX_1" KeepExtension="False" NewName="[string.Format(&quot;{0}\Learn to Program\UiPath\Rename files&amp;folders\Renamed Files\{1}_SiriusCyberneticsCorp{2}&quot;, Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), FileNameNoExtension, CurrentFile.Extension)]" />
+          </Sequence>
+        </ActivityAction>
+      </ui:ForEachFileX.Body>
+    </ui:ForEachFileX>
+    <uascw:CompressFiles CompressedFileInfo="{x:Null}" CompressedResource="{x:Null}" Password="{x:Null}" ResourcesToArchive="{x:Null}" SecurePassword="{x:Null}" AllowDuplicateContentNames="False" CodePage="Default" CompressedFileName="Renamed Invoices" CompressionLevel="Normal" DisplayName="Compress/Zip Files" EncryptionAlgorithm="Classic" sap:VirtualizedContainerService.HintSize="449.6,239.2" sap2010:WorkflowViewState.IdRef="CompressFiles_1" OverrideExistingFile="True">
+      <uascw:CompressFiles.ContentToArchive>
+        <scg:List x:TypeArguments="InArgument(x:String)" Capacity="1">
+          <InArgument x:TypeArguments="x:String">[string.Format("{0}\Learn to Program\UiPath\Rename files&amp;folders\Renamed Files", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments))]</InArgument>
+        </scg:List>
+      </uascw:CompressFiles.ContentToArchive>
+    </uascw:CompressFiles>
   </ueab:SequenceX>
 </Activity>
